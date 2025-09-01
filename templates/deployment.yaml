@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cerberus.fullname" . }}
+  labels:
+    app: {{ include "cerberus.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "cerberus.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "cerberus.name" . }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName | default "cerberus" }}
+      containers:
+        - name: cerberus
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args: ["python3 start_cerberus.py -c /root/cerberus/config/config.yaml -o /tmp/cerberus.report"]
+          ports:
+            - containerPort: 8080
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: cerberus-config
+              mountPath: /root/cerberus/config/config.yaml
+              subPath: config.yaml
+            - name: kubeconfig
+              mountPath: /root/.kube
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      volumes:
+        - name: cerberus-config
+          configMap:
+            name: {{ include "cerberus.fullname" . }}-config
+        - name: kubeconfig
+          secret:
+            secretName: {{ .Values.kubeconfigSecretName }}

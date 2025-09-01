@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cerberus.fullname" . }}-config
+  labels:
+    app: {{ include "cerberus.name" . }}
+data:
+  config.yaml: |
+    cerberus:
+      distribution: {{ .Values.cerberus.distribution }}
+      kubeconfig_path: {{ .Values.cerberus.kubeconfig_path }}
+      port: {{ .Values.cerberus.port }}
+      watch_nodes: {{ .Values.cerberus.watch_nodes }}
+      watch_cluster_operators: {{ .Values.cerberus.watch_cluster_operators }}
+      watch_url_routes: {{ toYaml .Values.cerberus.watch_url_routes | nindent 8 }}
+      watch_master_schedulable:
+        enabled: {{ .Values.cerberus.watch_master_schedulable.enabled }}
+        label: {{ .Values.cerberus.watch_master_schedulable.label }}
+      watch_namespaces: {{ toYaml .Values.cerberus.watch_namespaces | nindent 8 }}
+      cerberus_publish_status: {{ .Values.cerberus.cerberus_publish_status }}
+      inspect_components: {{ .Values.cerberus.inspect_components }}
+      prometheus_url: {{ .Values.cerberus.prometheus_url }}
+      prometheus_bearer_token: {{ .Values.cerberus.prometheus_bearer_token }}
+      slack_integration: {{ .Values.cerberus.slack_integration }}
+      watcher_slack_ID: {{ toYaml .Values.cerberus.watcher_slack_ID | nindent 8 }}
+      slack_team_alias: {{ .Values.cerberus.slack_team_alias }}
+      custom_checks: {{ toYaml .Values.cerberus.custom_checks | nindent 8 }}
+      kube_api_request_chunk_size: {{ .Values.cerberus.kube_api_request_chunk_size }}
+      daemon_mode: {{ .Values.cerberus.daemon_mode }}
+      cores_usage_percentage: {{ .Values.cerberus.cores_usage_percentage }}
+    tunings:
+      iterations: {{ .Values.tunings.iterations }}
+      sleep_time: {{ .Values.tunings.sleep_time }}
+    database:
+      database_path: {{ .Values.database.database_path }}
+      reuse_database: {{ .Values.database.reuse_database }}

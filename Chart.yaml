@@ -1,0 +1,8 @@
+apiVersion: v2
+name: cerberus
+version: 0.1.0
+description: A Helm chart for deploying Cerberus on OpenShift
+appVersion: "latest"
+maintainers:
+  - name: Kevin Etore
+    email: info@etore.nl
