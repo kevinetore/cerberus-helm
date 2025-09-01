@@ -20,9 +20,14 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
-          args: ["python3 start_cerberus.py -c /root/cerberus/config/config.yaml -o /tmp/cerberus.report"]
+          args: ["python3 start_cerberus.py -c /root/cerberus/config/config.yaml -o $CERBERUS_OUTPUT_PATH"]
           ports:
             - containerPort: 8080
+          env:
+            - name: CERBERUS_WORKDIR
+              value: {{ .Values.cerberus.workdir }}
+            - name: CERBERUS_OUTPUT_PATH
+              value: {{ .Values.cerberus.outputPath }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -31,6 +36,8 @@ spec:
               subPath: config.yaml
             - name: kubeconfig
               mountPath: /root/.kube
+            - name: cerberus-workdir
+              mountPath: {{ .Values.cerberus.workdir }}
       nodeSelector:
         {{- toYaml .Values.nodeSelector | nindent 8 }}
       tolerations:
@@ -42,5 +49,7 @@ spec:
           configMap:
             name: {{ include "cerberus.fullname" . }}-config
         - name: kubeconfig
-          secret:
-            secretName: {{ .Values.kubeconfigSecretName }}
+        secret:
+          secretName: {{ .Values.kubeconfigSecretName }}
+        - name: cerberus-workdir
+          emptyDir: { }

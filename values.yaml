@@ -24,6 +24,9 @@ affinity: {}
 kubeconfigSecretName: cerberus-kubeconfig
 
 cerberus:
+  workdir: /tmp/cerberus
+  outputPath: /tmp/cerberus/cerberus.report
+  kubeconfig_path: /root/.kube/config
   distribution: openshift
   port: 8080
   watch_nodes: true
