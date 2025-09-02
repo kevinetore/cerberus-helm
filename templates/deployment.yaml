@@ -15,6 +15,10 @@ spec:
         app: {{ include "cerberus.name" . }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName | default "cerberus" }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
       containers:
         - name: cerberus
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -49,7 +53,7 @@ spec:
           configMap:
             name: {{ include "cerberus.fullname" . }}-config
         - name: kubeconfig
-        secret:
-          secretName: {{ .Values.kubeconfigSecretName }}
+          secret:
+            secretName: {{ .Values.kubeconfigSecretName }}
         - name: cerberus-workdir
           emptyDir: { }
